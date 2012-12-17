@@ -20,7 +20,8 @@ node default {
   }
   
   exec { 'apt-get update':
-    path   => '/usr/bin/',
+    path  => '/usr/bin/',
+    stage => first,
   }
   class {'dashboard':
      dashboard_ensure   => 'present',
@@ -33,8 +34,7 @@ node default {
      dashboard_port     => '8080',
      mysql_root_pw      => 'changemetoo',
      passenger          => true,
-     
+     stage              => last,
   }
 
-  Exec['apt-get update'] -> Class['dashboard']
 }
