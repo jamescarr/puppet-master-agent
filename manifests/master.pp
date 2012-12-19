@@ -1,14 +1,10 @@
 node default {
-  apt::source { 'puppetlabs':
-    location   => 'http://apt.puppetlabs.com',
-    repos      => 'main',
-    key        => '4BD6EC30',
-    key_server => 'pgp.mit.edu',
-    before     => Package['puppetmaster'],
+  
+  stage { 'first': 
+      before => Stage['main'],
   }
-
-  class { 'apt':
-    always_apt_update    => true,
+  class {'aptness': 
+    stage => first,
   }
 
   package {"puppetmaster": 
@@ -19,10 +15,6 @@ node default {
     ensure => running,
   }
   
-  exec { 'apt-get update':
-    path  => '/usr/bin/',
-    stage => first,
-  }
   class {'dashboard':
      dashboard_ensure   => 'present',
      dashboard_user     => 'puppet-dbuser',
@@ -34,7 +26,20 @@ node default {
      dashboard_port     => '8080',
      mysql_root_pw      => 'changemetoo',
      passenger          => true,
-     stage              => last,
   }
 
+
+}
+
+class aptness {
+  apt::source { 'puppetlabs':
+    location   => 'http://apt.puppetlabs.com',
+    repos      => 'main',
+    key        => '4BD6EC30',
+    key_server => 'pgp.mit.edu',
+  }
+
+  class { 'apt':
+    always_apt_update => true,
+  }
 }
